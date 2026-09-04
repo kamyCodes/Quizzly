@@ -30,7 +30,7 @@ if (
 }
 
 // Backend API URL
-const API_URL = 'http://localhost:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 
 const { width } = Dimensions.get('window');
 
