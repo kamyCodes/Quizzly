@@ -4,7 +4,7 @@ const Groq = require('groq-sdk');
 require('dotenv').config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Middleware - Increased limits for large document uploads
 app.use(cors());
@@ -69,17 +69,14 @@ Rules:
       max_tokens: 2000,
     });
 
-    // Extract the response text
     const responseText = completion.choices[0]?.message?.content;
     
     if (!responseText) {
       throw new Error('No response from AI');
     }
 
-    // Try to parse the JSON
     let quizData;
     try {
-      // Remove any markdown code blocks if present
       const cleanText = responseText.replace(/```json\n?|\n?```/g, '').trim();
       quizData = JSON.parse(cleanText);
     } catch (parseError) {
@@ -91,7 +88,6 @@ Rules:
       });
     }
 
-    // Validate the quiz data structure
     if (!quizData.title || !Array.isArray(quizData.questions)) {
       return res.status(500).json({ 
         error: 'Invalid quiz data structure',
@@ -99,7 +95,6 @@ Rules:
       });
     }
 
-    // Validate each question
     for (const q of quizData.questions) {
       if (!q.question || !Array.isArray(q.options) || q.options.length !== 4 || 
           typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > 3) {
@@ -192,7 +187,6 @@ Rules:
       });
     }
 
-    // Validate structure
     if (!quizData.title || !Array.isArray(quizData.questions)) {
       return res.status(500).json({ 
         error: 'Invalid quiz data structure',
